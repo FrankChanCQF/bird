@@ -7,6 +7,7 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.RectF;
 import android.graphics.Shader;
+import android.util.Log;
 
 import com.frankchan.flappybird.Constant;
 
@@ -31,7 +32,7 @@ public class Floor extends AbsElement implements AbsElement.Movable{
         mInnerPaint = new Paint();
         mInnerPaint.setDither(true);
         mInnerPaint.setAntiAlias(true);
-        mInnerPaint.setShader(new BitmapShader(getBitmap(), Shader.TileMode.REPEAT, Shader.TileMode.CLAMP));
+        mInnerPaint.setShader(new BitmapShader(getBitmap(), Shader.TileMode.REPEAT, Shader.TileMode.REPEAT));
     }
 
     @Override

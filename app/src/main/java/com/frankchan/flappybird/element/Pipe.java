@@ -21,6 +21,8 @@ public class Pipe extends AbsElement implements AbsElement.Movable{
 
     private int pipeMargin;
 
+    private int pipeSpace;
+
     //上下管道长度
     private int[] pipeLengths;
 
@@ -47,16 +49,16 @@ public class Pipe extends AbsElement implements AbsElement.Movable{
     public int[] getPipeLength(){
         int[] pipes = new int[2];
         pipeMargin = (int)(getHeight()*Constant.PIPE_MARGIN);
+        pipeSpace = (int)(getHeight()*Constant.PIPE_SPACE);
         pipes[0] = random.nextInt((int)(getHeight()*(Constant.PIPE_MAX_HEIGHT-Constant.PIPE_MIN_HEIGHT)))+(int)(getHeight()*Constant.PIPE_MIN_HEIGHT);
-        //pipes[1] = (int)(getHeight()*Constant.PIPE_SPACE)-pipeMargin-pipeLengths[0];
-        pipes[1] = pipes[0];
+        pipes[1] = pipeSpace-pipeMargin-pipes[0];
         return pipes;
     }
 
     @Override
     public void drawElement(Canvas canvas) {
         canvas.save(Canvas.MATRIX_SAVE_FLAG);
-        canvas.translate(marginLeft,-pipeLengths[0]);
+        canvas.translate(marginLeft,0);
         RectF rectTop = new RectF(0,0,pipeWidth,pipeLengths[0]);
         canvas.drawBitmap(getBitmap(),null,rectTop,null);
         canvas.translate(0, pipeLengths[0] + pipeMargin);

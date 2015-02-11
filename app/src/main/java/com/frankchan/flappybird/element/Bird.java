@@ -13,24 +13,25 @@ import com.frankchan.flappybird.Util.Util;
  */
 public class Bird extends AbsElement implements AbsElement.Movable{
 
-    private int size;
+    private int sizeWidth,sizeHeight;
 
     public Bird(Context context, int width, int height, Bitmap bitmap) {
         super(context, width, height, bitmap);
-        size = Util.dp2px(getContext(), Constant.BIRD_SIZE_DIP);
+        sizeWidth = Util.dp2px(getContext(), Constant.BIRD_SIZE_DIP);
+        sizeHeight = sizeWidth*getBitmap().getHeight()/getBitmap().getWidth();
     }
 
     @Override
     public void setSize(int width, int height) {
         super.setSize(width, height);
-        marginLeft = getWidth()/2-size/2;
+        marginLeft = getWidth()/2- sizeWidth /2;
         marginTop = getHeight()*Constant.BIRD_MARGIN_TOP;
     }
 
     @Override
     public void drawElement(Canvas canvas) {
         canvas.save(Canvas.MATRIX_SAVE_FLAG);
-        RectF rectF = new RectF(marginLeft,marginTop,marginLeft+size,marginTop+size);
+        RectF rectF = new RectF(marginLeft,marginTop,marginLeft+ sizeWidth,marginTop+ sizeHeight);
         canvas.drawBitmap(getBitmap(),null,rectF,null);
         canvas.restore();
     }

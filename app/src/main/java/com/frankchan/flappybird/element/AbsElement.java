@@ -22,10 +22,9 @@ public abstract class AbsElement {
     protected float marginLeft,marginTop;
 
     protected AbsElement(Context context,int width, int height, Bitmap bitmap) {
-        this.width = width;
-        this.height = height;
         this.bitmap = bitmap;
         this.context = context;
+        setSize(width,height);
     }
 
     public int getWidth() {

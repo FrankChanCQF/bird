@@ -63,7 +63,6 @@ public class MainView extends SurfaceView implements SurfaceHolder.Callback,Runn
 
     @Override
     public void run() {
-        Log.e("frankchan","开始绘画");
         while(isRunning()){
             long startTime = System.currentTimeMillis();
             actionDraw();
@@ -110,10 +109,12 @@ public class MainView extends SurfaceView implements SurfaceHolder.Callback,Runn
     }
 
     private void drawAllElements(){
-        //mBackground.drawElement(mCanvas);
-        //mBird.drawElement(mCanvas);
-        //mPipe.drawElement(mCanvas);
-        mFloor.drawElement(mCanvas);
+        if(mBackground==null||mBird==null||mFloor==null)
+            return;
+            mBackground.drawElement(mCanvas);
+            mBird.drawElement(mCanvas);
+            mPipe.drawElement(mCanvas);
+            mFloor.drawElement(mCanvas);
     }
 
     //调整下一次刷新的数据
@@ -126,7 +127,6 @@ public class MainView extends SurfaceView implements SurfaceHolder.Callback,Runn
     @Override
     public void surfaceCreated(SurfaceHolder holder) {
         initBitmaps();
-        initAllElements();
         mHorizontalSpeed = -Util.dp2px(getContext(),Constant.VIEW_MOVE_SPEED_DIP);
         mDropSpeed = Util.dp2px(getContext(),Constant.BIRD_DROP_SPEED_DIP);
         start();
@@ -136,10 +136,7 @@ public class MainView extends SurfaceView implements SurfaceHolder.Callback,Runn
     public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
         mWidth  = width;
         mHeight = height;
-        mBackground.setSize(mWidth,mHeight);
-        mBird.setSize(mWidth,mHeight);
-        mFloor.setSize(mWidth,mHeight);
-        mPipe.setSize(mWidth,mHeight);
+        initAllElements();
     }
 
     @Override
