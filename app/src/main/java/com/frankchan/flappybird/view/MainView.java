@@ -6,7 +6,6 @@ import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.PixelFormat;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
@@ -14,7 +13,6 @@ import android.view.View;
 
 import com.frankchan.flappybird.Constant;
 import com.frankchan.flappybird.Util.Util;
-import com.frankchan.flappybird.element.AbsElement;
 import com.frankchan.flappybird.element.Background;
 import com.frankchan.flappybird.element.Bird;
 import com.frankchan.flappybird.element.Floor;
@@ -56,7 +54,7 @@ public class MainView extends SurfaceView implements SurfaceHolder.Callback,Runn
 
     private Bitmap bmpBg,bmpTop,bmpBottom,bmpFloor,bmpBird;
 
-    private Bitmap[] bmpNumArrays = new Bitmap[Constant.RES_NUMBER_ARRYS.length];
+    private Bitmap[] bmpNumArrays = new Bitmap[Constant.RES_NUMBER_ARRAYS.length];
 
     /*逻辑部分*/
 
@@ -141,9 +139,17 @@ public class MainView extends SurfaceView implements SurfaceHolder.Callback,Runn
                 break;
             case Over:
                 mEnableTouch = false;
+                postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        restart();
+                        mEnableTouch = true;
+                    }
+                },1000);
                 break;
         }
     }
+
 
     private void actionDraw(){
         try{
@@ -175,8 +181,8 @@ public class MainView extends SurfaceView implements SurfaceHolder.Callback,Runn
         bmpFloor = loadImageByResource(Constant.RES_FLOOR);
         bmpTop = loadImageByResource(Constant.RES_TOP_PIPE);
         bmpBottom = loadImageByResource(Constant.RES_BOTTOM_PIPE);
-        for(int i=0;i<Constant.RES_NUMBER_ARRYS.length;i++){
-            bmpNumArrays[i] = loadImageByResource(Constant.RES_NUMBER_ARRYS[i]);
+        for(int i=0;i<Constant.RES_NUMBER_ARRAYS.length;i++){
+            bmpNumArrays[i] = loadImageByResource(Constant.RES_NUMBER_ARRAYS[i]);
         }
     }
 
@@ -210,7 +216,7 @@ public class MainView extends SurfaceView implements SurfaceHolder.Callback,Runn
     }
 
     @Override
-    public void surfaceDestroyed(SurfaceHolder holder) { release();}
+    public void surfaceDestroyed(SurfaceHolder holder) { pause();}
 
 
     private Bitmap loadImageByResource(int resId){
@@ -227,8 +233,17 @@ public class MainView extends SurfaceView implements SurfaceHolder.Callback,Runn
         return mRunnable;
     }
 
-    public void release(){
+    public void pause(){
         mRunnable = false;
+    }
+
+    public void restart(){
+        pause();
+        mPipes.clear();
+        initAllElements();
+        mRunnable = true;
+        mStatus = Status.Running;
+        mPipePaceSum = 0;
     }
 
     @Override

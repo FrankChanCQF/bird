@@ -23,7 +23,7 @@ public class Constant {
     public static final int BIRD_TOUCH_HEIGHT_DIP = 30;
 
     //<----分数----->
-    public static final int[] RES_NUMBER_ARRYS = {R.drawable.n0,R.drawable.n1,R.drawable.n2,
+    public static final int[] RES_NUMBER_ARRAYS = {R.drawable.n0,R.drawable.n1,R.drawable.n2,
             R.drawable.n3,R.drawable.n4,R.drawable.n5,R.drawable.n6,R.drawable.n7,R.drawable.n8,R.drawable.n9};
     public static final float NUMBER_MARGIN_TOP = 1/5f;
     public static final int NUMBER_SINGLE_WIDTH_DIP = 25;
@@ -39,7 +39,7 @@ public class Constant {
     public static final int RES_BOTTOM_PIPE = R.drawable.bottom;
 
     public static final float PIPE_MAX_HEIGHT = 2/5f;
-    public static final float PIPE_MIN_HEIGHT = 1/5f;
+    public static final float PIPE_MIN_HEIGHT = 1/6f;
     public static final float PIPE_VERTICAL_MARGIN = 1/5f;
     public static final float PIPE_HORIZONTAL_MARGIN = 1/2f;
     //管道绘图占据总空间

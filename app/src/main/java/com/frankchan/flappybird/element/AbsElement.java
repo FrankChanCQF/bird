@@ -21,8 +21,6 @@ public abstract class AbsElement {
 
     protected float left, top, right, bottom;
 
-
-
     protected AbsElement(Context context,int width, int height, Bitmap bitmap) {
         this.bitmap = bitmap;
         this.context = context;
@@ -69,7 +67,9 @@ public abstract class AbsElement {
     }
 
     public interface Crashable{
+
         boolean isCrash(AbsElement element);
+
     }
 
     public interface Movable {
