@@ -19,7 +19,9 @@ public abstract class AbsElement {
 
     private Context context;
 
-    protected float marginLeft,marginTop;
+    protected float left, top, right, bottom;
+
+
 
     protected AbsElement(Context context,int width, int height, Bitmap bitmap) {
         this.bitmap = bitmap;
@@ -50,6 +52,25 @@ public abstract class AbsElement {
 
     public abstract void drawElement(Canvas canvas);
 
+    protected float getLeft() {
+        return left;
+    }
+
+    protected float getTop() {
+        return top;
+    }
+
+    protected float getRight() {
+        return left+getWidth();
+    }
+
+    protected float getBottom() {
+        return top+getHeight();
+    }
+
+    public interface Crashable{
+        boolean isCrash(AbsElement element);
+    }
 
     public interface Movable {
 

@@ -7,8 +7,10 @@ import android.graphics.Canvas;
 import android.graphics.PixelFormat;
 import android.util.AttributeSet;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
+import android.view.View;
 
 import com.frankchan.flappybird.Constant;
 import com.frankchan.flappybird.Util.Util;
@@ -16,12 +18,17 @@ import com.frankchan.flappybird.element.AbsElement;
 import com.frankchan.flappybird.element.Background;
 import com.frankchan.flappybird.element.Bird;
 import com.frankchan.flappybird.element.Floor;
+import com.frankchan.flappybird.element.Grade;
 import com.frankchan.flappybird.element.Pipe;
+
+import java.util.ArrayList;
 
 /**
  * Created by frankchan on 2015/2/9.
  */
-public class MainView extends SurfaceView implements SurfaceHolder.Callback,Runnable{
+public class MainView extends SurfaceView implements SurfaceHolder.Callback,Runnable,View.OnTouchListener{
+
+    /*界面部分*/
 
     private SurfaceHolder mHolder;
 
@@ -33,17 +40,35 @@ public class MainView extends SurfaceView implements SurfaceHolder.Callback,Runn
 
     private int mWidth,mHeight;
 
-    private Floor mFloor;
-
-    private Pipe mPipe;
+    private Grade mGrade;
 
     private Bird mBird;
 
-    private AbsElement mBackground;
+    private Floor mFloor;
 
-    private int mHorizontalSpeed,mDropSpeed;
+    private Background mBackground;
+
+    private ArrayList<Pipe>mPipes = new ArrayList<>();
+
+    private ArrayList<Pipe>mRemovePipes = new ArrayList<>();
+
+    private int mHorizontalSpeed;
 
     private Bitmap bmpBg,bmpTop,bmpBottom,bmpFloor,bmpBird;
+
+    private Bitmap[] bmpNumArrays = new Bitmap[Constant.RES_NUMBER_ARRYS.length];
+
+    /*逻辑部分*/
+
+    private int mPipePaceSum;
+
+    private enum Status{
+        Waiting,Running,Over
+    }
+
+    private Status mStatus = Status.Running;
+
+    private boolean mEnableTouch = true;
 
     public MainView(Context context) {
         this(context, null);
@@ -59,11 +84,13 @@ public class MainView extends SurfaceView implements SurfaceHolder.Callback,Runn
         setKeepScreenOn(true);
         setFocusable(true);
         setFocusableInTouchMode(true);
+        setOnTouchListener(this);
     }
 
     @Override
     public void run() {
         while(isRunning()){
+            actionLogic();
             long startTime = System.currentTimeMillis();
             actionDraw();
             long endTime = System.currentTimeMillis();
@@ -71,10 +98,50 @@ public class MainView extends SurfaceView implements SurfaceHolder.Callback,Runn
                 if(endTime-startTime< Constant.VIEW_REFRESH_INTERVAL){
                     Thread.sleep(Constant.VIEW_REFRESH_INTERVAL - endTime + startTime);
                 }
-                refreshNextFrame();
             }catch (InterruptedException ex){
                 ex.printStackTrace();
             }
+        }
+    }
+
+    private void actionLogic(){
+        switch(mStatus){
+            case Running:
+                //刷新下一帧
+                mBird.autoDrop();
+                mFloor.horizontalMoveBy(mHorizontalSpeed);
+                //碰撞检测
+                boolean isCrashPipe = false;
+                boolean isCrashFloor = mFloor.isCrash(mBird);
+                for(Pipe pipe:mPipes){
+                    pipe.horizontalMoveBy(mHorizontalSpeed);
+                    if(pipe.isOutScreen()){
+                        mRemovePipes.add(pipe);
+                    }else if(pipe.isCrash(mBird)){
+                        isCrashPipe = true;
+                    }
+                    if(pipe.getRight()<mBird.getLeft()&&!pipe.isAdded()){
+                        mGrade.increase();
+                        pipe.setAdded(true);
+                    }
+                }
+                if(isCrashFloor||isCrashPipe){
+                    mStatus = Status.Over;
+                }
+                mPipes.remove(mRemovePipes);
+
+                mPipePaceSum +=mHorizontalSpeed;
+                if(Math.abs(mPipePaceSum) >=getWidth()*Constant.PIPE_HORIZONTAL_MARGIN){
+                    mPipes.add(new Pipe(getContext(),getWidth(),getHeight(),bmpTop,bmpBottom));
+                    mPipePaceSum=0;
+                }
+                break;
+            case Waiting:
+                mEnableTouch = false;
+                break;
+            case Over:
+                mEnableTouch = false;
+                break;
         }
     }
 
@@ -93,11 +160,13 @@ public class MainView extends SurfaceView implements SurfaceHolder.Callback,Runn
         }
     }
 
+
     private void initAllElements(){
         mBackground = new Background(getContext(),mWidth,mHeight,bmpBg);
         mBird = new Bird(getContext(),mWidth,mHeight,bmpBird);
         mFloor = new Floor(getContext(),mWidth,mHeight,bmpFloor);
-        mPipe = new Pipe(getContext(),mWidth,mHeight,bmpTop, bmpBottom);
+        mGrade = new Grade(getContext(),mWidth,mHeight,bmpNumArrays);
+        mPipes.add(new Pipe(getContext(),mWidth,mHeight,bmpTop, bmpBottom));
     }
 
     private void initBitmaps(){
@@ -106,21 +175,22 @@ public class MainView extends SurfaceView implements SurfaceHolder.Callback,Runn
         bmpFloor = loadImageByResource(Constant.RES_FLOOR);
         bmpTop = loadImageByResource(Constant.RES_TOP_PIPE);
         bmpBottom = loadImageByResource(Constant.RES_BOTTOM_PIPE);
+        for(int i=0;i<Constant.RES_NUMBER_ARRYS.length;i++){
+            bmpNumArrays[i] = loadImageByResource(Constant.RES_NUMBER_ARRYS[i]);
+        }
     }
 
     private void drawAllElements(){
-        if(mBackground==null||mBird==null||mFloor==null)
+        if(mBackground==null||mBird==null||mFloor==null||mGrade==null||mPipes.size()==0) {
             return;
+        }
             mBackground.drawElement(mCanvas);
             mBird.drawElement(mCanvas);
-            mPipe.drawElement(mCanvas);
             mFloor.drawElement(mCanvas);
-    }
-
-    //调整下一次刷新的数据
-    private void refreshNextFrame(){
-        mPipe.horizontalMoveBy(mHorizontalSpeed);
-        mFloor.horizontalMoveBy(mHorizontalSpeed);
+        for(Pipe pipe:mPipes){
+            pipe.drawElement(mCanvas);
+        }
+        mGrade.drawElement(mCanvas);
     }
 
 
@@ -128,8 +198,6 @@ public class MainView extends SurfaceView implements SurfaceHolder.Callback,Runn
     public void surfaceCreated(SurfaceHolder holder) {
         initBitmaps();
         mHorizontalSpeed = -Util.dp2px(getContext(),Constant.VIEW_MOVE_SPEED_DIP);
-        mDropSpeed = Util.dp2px(getContext(),Constant.BIRD_DROP_SPEED_DIP);
-        start();
     }
 
     @Override
@@ -137,6 +205,8 @@ public class MainView extends SurfaceView implements SurfaceHolder.Callback,Runn
         mWidth  = width;
         mHeight = height;
         initAllElements();
+        if(!isRunning())
+            start();
     }
 
     @Override
@@ -157,9 +227,15 @@ public class MainView extends SurfaceView implements SurfaceHolder.Callback,Runn
         return mRunnable;
     }
 
-    public void pause(){ }
-
     public void release(){
         mRunnable = false;
+    }
+
+    @Override
+    public boolean onTouch(View v, MotionEvent event) {
+        if(event.getAction()==MotionEvent.ACTION_DOWN&&mEnableTouch){
+            mBird.raiseByTouch();
+        }
+        return true;
     }
 }

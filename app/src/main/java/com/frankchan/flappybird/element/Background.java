@@ -19,4 +19,5 @@ public class Background extends AbsElement{
     public void drawElement(Canvas canvas) {
         canvas.drawBitmap(getBitmap(),null,new RectF(0,0,getWidth(),getHeight()),null);
     }
+
 }
