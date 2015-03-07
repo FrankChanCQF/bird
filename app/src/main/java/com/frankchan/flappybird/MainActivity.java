@@ -9,13 +9,21 @@ import com.frankchan.flappybird.view.MainView;
 
 public class MainActivity extends Activity {
 
+
+    private MainView mView;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
-        MainView view = new MainView(this);
-        setContentView(view);
+        mView = new MainView(this);
+        setContentView(mView);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        mView.recycle();
     }
 }

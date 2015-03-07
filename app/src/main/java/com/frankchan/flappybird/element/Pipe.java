@@ -13,9 +13,9 @@ import java.util.Random;
 /**
  * Created by frankchan on 2015/2/9.
  */
-public class Pipe extends AbsElement implements AbsElement.Movable,AbsElement.Crashable{
+public class Pipe extends AbsElement{
 
-    private Bitmap extraBitmap;
+    private Bitmap mExtraBitmap;
 
     private int pipeWidth;
 
@@ -28,55 +28,54 @@ public class Pipe extends AbsElement implements AbsElement.Movable,AbsElement.Cr
 
     private boolean isAdded = false;
 
+    private RectF mRectTop,mRectBottom;
+
     private static final Random random = new Random();
 
     private Pipe(Context context, int width, int height, Bitmap bitmap) {
         super(context, width, height, bitmap);
+        mRectTop = new RectF();
+        mRectBottom = new RectF();
     }
 
     public Pipe(Context context, int width, int height, Bitmap bitmap,Bitmap extraBitmap) {
         this(context, width, height, bitmap);
-        this.extraBitmap = extraBitmap;
-    }
-
-    @Override
-    public void setSize(int width, int height) {
-        super.setSize(width, height);
-        //管道默认从右边出现
-        left = getWidth();
-        pipeLengths = getPipeLength();
-        pipeWidth = Util.dp2px(getContext(), Constant.PIPE_WIDTH_DIP);
+        this.mExtraBitmap = extraBitmap;
     }
 
     public int[] getPipeLength(){
         int[] pipes = new int[2];
-        pipeMargin = (int)(getHeight()*Constant.PIPE_VERTICAL_MARGIN);
-        pipeSpace = (int)(getHeight()*Constant.PIPE_SPACE);
-        pipes[0] = random.nextInt((int)(getHeight()*(Constant.PIPE_MAX_HEIGHT-Constant.PIPE_MIN_HEIGHT)))+(int)(getHeight()*Constant.PIPE_MIN_HEIGHT);
+        pipeMargin = (int)(getCanvasHeight()*Constant.PIPE_VERTICAL_MARGIN);
+        pipeSpace = (int)(getCanvasHeight()*Constant.PIPE_SPACE);
+        pipes[0] = random.nextInt((int)(getCanvasHeight()*(Constant.PIPE_MAX_HEIGHT-Constant.PIPE_MIN_HEIGHT)))+(int)(getCanvasHeight()*Constant.PIPE_MIN_HEIGHT);
         pipes[1] = pipeSpace-pipeMargin-pipes[0];
         return pipes;
     }
 
+
     @Override
-    public void drawElement(Canvas canvas) {
+    public void onCreate(Context context) {
+        //管道默认从右边出现
+        left = getCanvasWidth();
+        pipeLengths = getPipeLength();
+        pipeWidth = Util.dp2px(getContext(), Constant.PIPE_WIDTH_DIP);
+    }
+
+    @Override
+    public void onDraw(Canvas canvas) {
         canvas.save(Canvas.MATRIX_SAVE_FLAG);
         canvas.translate(left,0);
-        RectF rectTop = new RectF(0,0,pipeWidth,pipeLengths[0]);
-        canvas.drawBitmap(getBitmap(),null,rectTop,null);
+        mRectTop.set(0,0,pipeWidth,pipeLengths[0]);
+        canvas.drawBitmap(getBitmap(),null,mRectTop,null);
         canvas.translate(0, pipeLengths[0] + pipeMargin);
-        RectF rectBottom = new RectF(0,0,pipeWidth,pipeLengths[1]);
-        canvas.drawBitmap(extraBitmap,null,rectBottom,null);
+        mRectBottom.set(0,0,pipeWidth,pipeLengths[1]);
+        canvas.drawBitmap(mExtraBitmap,null,mRectBottom,null);
         canvas.restore();
     }
 
     @Override
-    public void verticalMoveBy(int distance) {
-
-    }
-
-    @Override
-    public void horizontalMoveBy(int distance) {
-        left +=distance;
+    public void onDestroy() {
+        recycleBitmap(mExtraBitmap);
     }
 
     public boolean isOutScreen(){

@@ -1,6 +1,7 @@
 package com.frankchan.flappybird.view;
 
 import android.content.Context;
+import android.content.res.TypedArray;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
@@ -12,7 +13,9 @@ import android.view.SurfaceView;
 import android.view.View;
 
 import com.frankchan.flappybird.Constant;
+import com.frankchan.flappybird.R;
 import com.frankchan.flappybird.Util.Util;
+import com.frankchan.flappybird.element.AbsElement;
 import com.frankchan.flappybird.element.Background;
 import com.frankchan.flappybird.element.Bird;
 import com.frankchan.flappybird.element.Floor;
@@ -83,6 +86,16 @@ public class MainView extends SurfaceView implements SurfaceHolder.Callback,Runn
         setFocusable(true);
         setFocusableInTouchMode(true);
         setOnTouchListener(this);
+        TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.MainSurfaceView);
+        for(int i =0 ;i<a.length();i++){
+            int attr = a.getIndex(i);
+            switch(attr){
+                case R.styleable.MainSurfaceView_inner_gravity:
+                    break;
+                default:
+                    break;
+            }
+        }
     }
 
     @Override
@@ -127,6 +140,7 @@ public class MainView extends SurfaceView implements SurfaceHolder.Callback,Runn
                     mStatus = Status.Over;
                 }
                 mPipes.remove(mRemovePipes);
+                mRemovePipes.clear();
 
                 mPipePaceSum +=mHorizontalSpeed;
                 if(Math.abs(mPipePaceSum) >=getWidth()*Constant.PIPE_HORIZONTAL_MARGIN){
@@ -190,9 +204,9 @@ public class MainView extends SurfaceView implements SurfaceHolder.Callback,Runn
         if(mBackground==null||mBird==null||mFloor==null||mGrade==null||mPipes.size()==0) {
             return;
         }
-            mBackground.drawElement(mCanvas);
-            mBird.drawElement(mCanvas);
-            mFloor.drawElement(mCanvas);
+        mBackground.drawElement(mCanvas);
+        mBird.drawElement(mCanvas);
+        mFloor.drawElement(mCanvas);
         for(Pipe pipe:mPipes){
             pipe.drawElement(mCanvas);
         }
@@ -252,5 +266,14 @@ public class MainView extends SurfaceView implements SurfaceHolder.Callback,Runn
             mBird.raiseByTouch();
         }
         return true;
+    }
+
+    public void recycle(){
+        mBackground.recycle();
+        mBird.recycle();
+        mFloor.recycle();
+        mGrade.recycle();
+        AbsElement.recycleBitmap(bmpTop);
+        AbsElement.recycleBitmap(bmpBottom);
     }
 }

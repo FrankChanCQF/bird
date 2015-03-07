@@ -3,7 +3,6 @@ package com.frankchan.flappybird.element;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
-import android.graphics.Paint;
 import android.graphics.RectF;
 
 /**
@@ -16,8 +15,18 @@ public class Background extends AbsElement{
     }
 
     @Override
-    public void drawElement(Canvas canvas) {
-        canvas.drawBitmap(getBitmap(),null,new RectF(0,0,getWidth(),getHeight()),null);
+    public void onCreate(Context context) {
+
     }
 
+    @Override
+    public void onDraw(Canvas canvas) {
+        mRectF.set(0,0, getCanvasWidth(), getCanvasHeight());
+        canvas.drawBitmap(getBitmap(),null,mRectF,null);
+    }
+
+    @Override
+    public void onDestroy() {
+
+    }
 }

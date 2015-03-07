@@ -11,42 +11,41 @@ import com.frankchan.flappybird.Util.Util;
 /**
  * Created by frankchan on 2015/2/9.
  */
-public class Bird extends AbsElement implements AbsElement.Movable{
+public class Bird extends AbsElement{
 
     private int sizeWidth,sizeHeight,raiseHeight,dropSpeed;
 
     public Bird(Context context, int width, int height, Bitmap bitmap) {
         super(context, width, height, bitmap);
-        sizeWidth = Util.dp2px(getContext(), Constant.BIRD_SIZE_DIP);
-        sizeHeight = sizeWidth*getBitmap().getHeight()/getBitmap().getWidth();
-        raiseHeight = -Util.dp2px(getContext(),Constant.BIRD_TOUCH_HEIGHT_DIP);
-        dropSpeed = Util.dp2px(getContext(),Constant.BIRD_DROP_SPEED_DIP);
     }
 
     @Override
-    public void setSize(int width, int height) {
-        super.setSize(width, height);
-        left = getWidth()/2- sizeWidth /2;
-        top = getHeight()*Constant.BIRD_MARGIN_TOP;
+    public void onCreate(Context context) {
+        sizeWidth = Util.dp2px(context, Constant.BIRD_SIZE_DIP);
+        sizeHeight = sizeWidth*getHeight()/getWidth();
+        raiseHeight = -Util.dp2px(context,Constant.BIRD_TOUCH_HEIGHT_DIP);
+        dropSpeed = Util.dp2px(context,Constant.BIRD_DROP_SPEED_DIP);
+        left = getCanvasWidth()/2- sizeWidth /2;
+        top = getCanvasHeight()*Constant.BIRD_MARGIN_TOP;
     }
 
     @Override
-    public void drawElement(Canvas canvas) {
+    public void onDraw(Canvas canvas) {
         canvas.save(Canvas.MATRIX_SAVE_FLAG);
-        RectF rectF = new RectF(left, top, left + sizeWidth, top + sizeHeight);
-        canvas.drawBitmap(getBitmap(),null,rectF,null);
+        mRectF.set(left, top, left + sizeWidth, top + sizeHeight);
+        canvas.drawBitmap(getBitmap(), null, mRectF, null);
         canvas.restore();
     }
 
     @Override
-    public void verticalMoveBy(int distance) {
-        top +=distance;
-        top = Math.max(0, top);
+    public void onDestroy() {
+
     }
 
     @Override
-    public void horizontalMoveBy(int distance) {
-
+    public void verticalMoveBy(int distance) {
+        super.verticalMoveBy(distance);
+        top = Math.max(0, top);
     }
 
     public void raiseByTouch(){

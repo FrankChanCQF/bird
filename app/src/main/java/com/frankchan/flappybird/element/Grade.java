@@ -23,25 +23,35 @@ public class Grade extends AbsElement {
 
     private ArrayList<Integer>numArrays = new ArrayList<>();
 
-    public Grade(Context context, int width, int height, Bitmap[] bmps){
-        super(context, width, height,null);
-        reset();
-        bmpArrays = bmps;
-        charWidth = Util.dp2px(getContext(), Constant.NUMBER_SINGLE_WIDTH_DIP);
-        charHeight = charWidth * bmps[0].getHeight()/bmps[0].getWidth();
-        top = getHeight()*Constant.NUMBER_MARGIN_TOP;
+    public Grade(Context context, int width, int height, Bitmap[] bitmapArray){
+        super(context, width, height, null);
+        bmpArrays = bitmapArray;
     }
 
     @Override
-    public void drawElement(Canvas canvas) {
+    public void onCreate(Context context) {
+        charWidth = Util.dp2px(getContext(), Constant.NUMBER_SINGLE_WIDTH_DIP);
+        charHeight = charWidth * bmpArrays[0].getHeight()/bmpArrays[0].getWidth();
+        top = getCanvasHeight()*Constant.NUMBER_MARGIN_TOP;
+        reset();
+    }
+
+    @Override
+    public void onDraw(Canvas canvas) {
         canvas.save(Canvas.MATRIX_SAVE_FLAG);
-        left = getWidth()/2-numArrays.size()*charWidth/2;
-        RectF rectF = new RectF();
+        left = getCanvasWidth()/2-numArrays.size()*charWidth/2;
         for(int j =0;j<numArrays.size();j++){
-            rectF.set(left+j*charWidth,top,left+(j+1)*charWidth,top+charHeight);
-            canvas.drawBitmap(bmpArrays[numArrays.get(j)],null,rectF,null);
+            mRectF.set(left+j*charWidth,top,left+(j+1)*charWidth,top+charHeight);
+            canvas.drawBitmap(bmpArrays[numArrays.get(j)],null,mRectF,null);
         }
         canvas.restore();
+    }
+
+    @Override
+    public void onDestroy() {
+        for (Bitmap bitmap :bmpArrays){
+            recycleBitmap(bitmap);
+        }
     }
 
     private void computeGrade(){

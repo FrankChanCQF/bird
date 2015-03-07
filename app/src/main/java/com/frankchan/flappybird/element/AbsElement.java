@@ -3,52 +3,59 @@ package com.frankchan.flappybird.element;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
-import android.graphics.Paint;
 import android.graphics.RectF;
 
 /**
  * Created by frankchan on 2015/2/9.
  */
-public abstract class AbsElement {
+public abstract class AbsElement implements AbsLifeCycle{
 
-    private int width;
+    private int mCanvasWidth;
 
-    private int height;
+    private int mCanvasHeight;
 
-    private Bitmap bitmap;
+    private Bitmap mBitmap;
 
-    private Context context;
+    private Context mContext;
 
-    protected float left, top, right, bottom;
+    //the top and left of element
+    protected float left, top;
 
-    protected AbsElement(Context context,int width, int height, Bitmap bitmap) {
-        this.bitmap = bitmap;
-        this.context = context;
-        setSize(width,height);
+    protected RectF mRectF = new RectF();
+
+    public AbsElement(Context context,int width, int height, Bitmap bitmap) {
+        this.mBitmap = bitmap;
+        this.mContext = context;
+        setCanvasSize(width, height);
+        onCreate(context);
     }
 
-    public int getWidth() {
-        return width;
+    public int getCanvasWidth() {
+        return mCanvasWidth;
     }
 
-    public int getHeight() {
-        return height;
+    public int getCanvasHeight() {
+        return mCanvasHeight;
     }
 
     public Context getContext() {
-        return context;
+        return mContext;
     }
 
-    public void setSize(int width, int height){
-        this.width = width;
-        this.height = height;
+    public void setCanvasSize(int width, int height){
+        this.mCanvasWidth = width;
+        this.mCanvasHeight = height;
     }
 
     public Bitmap getBitmap() {
-        return bitmap;
+        return mBitmap;
     }
 
-    public abstract void drawElement(Canvas canvas);
+    public void drawElement(Canvas canvas){
+        if (mBitmap ==null||canvas==null)
+            return;
+        onDraw(canvas);
+    };
 
     protected float getLeft() {
         return left;
@@ -59,27 +66,41 @@ public abstract class AbsElement {
     }
 
     protected float getRight() {
-        return left+getWidth();
-    }
+    return getLeft()+ getWidth();
+}
 
     protected float getBottom() {
-        return top+getHeight();
+        return getTop()+ getHeight();
     }
 
-    public interface Crashable{
-
-        boolean isCrash(AbsElement element);
-
+    public int getWidth(){
+        return mBitmap == null ? 0 : mBitmap.getWidth();
     }
 
-    public interface Movable {
-
-        //垂直移动
-        void verticalMoveBy(int distance);
-
-        //水平移动
-        void horizontalMoveBy(int distance);
-
+    public int getHeight(){
+        return  mBitmap == null ? 0 : mBitmap.getWidth();
     }
 
+    protected boolean isCrash(AbsElement element) {
+        return false;
+    }
+
+    public void verticalMoveBy(int distance) {
+        top+=distance;
+    }
+
+    public void horizontalMoveBy(int distance) {
+        left+=distance;
+    }
+
+    public static void recycleBitmap(Bitmap bitmap){
+        if(bitmap!=null&&!bitmap.isRecycled()){
+            bitmap.recycle();
+        }
+    }
+
+    public void recycle(){
+        recycleBitmap(mBitmap);
+        onDestroy();
+    }
 }

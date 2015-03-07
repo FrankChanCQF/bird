@@ -13,9 +13,7 @@ import com.frankchan.flappybird.Constant;
 /**
  * Created by frankchan on 2015/2/9.
  */
-public class Floor extends AbsElement implements AbsElement.Movable,AbsElement.Crashable{
-
-    private int blockWidth;
+public class Floor extends AbsElement{
 
     private Paint mInnerPaint;
 
@@ -24,35 +22,34 @@ public class Floor extends AbsElement implements AbsElement.Movable,AbsElement.C
     }
 
     @Override
-    public void setSize(int width, int height) {
-        super.setSize(width, height);
-        top = (int)(getHeight()* Constant.FLOOR_MARGIN_TOP);
-        blockWidth = getBitmap().getWidth();
+    public void onCreate(Context context) {
+        top = (int)(getCanvasHeight()* Constant.FLOOR_MARGIN_TOP);
         mInnerPaint = new Paint();
         mInnerPaint.setDither(true);
         mInnerPaint.setAntiAlias(true);
         mInnerPaint.setShader(new BitmapShader(getBitmap(), Shader.TileMode.REPEAT, Shader.TileMode.REPEAT));
     }
 
+
     @Override
-    public void verticalMoveBy(int distance) {
+    public void onDraw(Canvas canvas) {
+        canvas.save(Canvas.MATRIX_SAVE_FLAG);
+        mRectF.set(left, top, getCanvasWidth(), getCanvasHeight());
+        canvas.drawRect(mRectF,mInnerPaint);
+        canvas.restore();
+    }
+
+    @Override
+    public void onDestroy() {
 
     }
 
     @Override
     public void horizontalMoveBy(int distance) {
-        left +=distance;
-        if(-left >blockWidth){
-            left = left %blockWidth;
+        super.horizontalMoveBy(distance);
+        if(-getLeft() >getWidth()){
+            left = getLeft() % getWidth();
         }
-    }
-
-    @Override
-    public void drawElement(Canvas canvas) {
-        canvas.save(Canvas.MATRIX_SAVE_FLAG);
-        RectF rectF = new RectF(left, top,getWidth(),getHeight());
-        canvas.drawRect(rectF,mInnerPaint);
-        canvas.restore();
     }
 
     @Override
@@ -60,6 +57,16 @@ public class Floor extends AbsElement implements AbsElement.Movable,AbsElement.C
         if(element.getBottom()>getTop()){
             return true;
         }
-        return false;
+        return super.isCrash(element);
+    }
+
+    @Override
+    protected float getRight() {
+        return getLeft()+ getCanvasWidth();
+    }
+
+    @Override
+    protected float getBottom() {
+        return getLeft()+ getCanvasHeight();
     }
 }
