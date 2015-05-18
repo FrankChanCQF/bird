@@ -21,6 +21,8 @@ public abstract class AbsElement implements AbsLifeCycle{
     //the top and left of element
     protected float left, top;
 
+    private int mRotation = 0;
+
     protected RectF mRectF = new RectF();
 
     public AbsElement(Context context,int width, int height, Bitmap bitmap) {
@@ -55,7 +57,15 @@ public abstract class AbsElement implements AbsLifeCycle{
         if (mBitmap ==null||canvas==null)
             return;
         onDraw(canvas);
-    };
+    }
+
+    protected float getPivotX(){
+        return (getLeft()+getRight())/2;
+    }
+
+    protected  float getPivotY(){
+        return (getTop()+getBottom())/2;
+    }
 
     protected float getLeft() {
         return left;
@@ -91,6 +101,20 @@ public abstract class AbsElement implements AbsLifeCycle{
 
     public void horizontalMoveBy(int distance) {
         left+=distance;
+    }
+
+    protected int getRotation() {
+        return mRotation;
+    }
+
+    protected void setRotation(int mRotation) {
+        if(enableRotation()) {
+            this.mRotation = mRotation;
+        }
+    }
+
+    protected boolean enableRotation(){
+        return false;
     }
 
     public static void recycleBitmap(Bitmap bitmap){

@@ -17,6 +17,9 @@ public class Constant {
     //<----小鸟----->
     public static final int RES_BIRD = R.drawable.bird;
     public static final float BIRD_MARGIN_TOP = 1/2f;
+    public static final int BIRD_MAX_ROTATION = 45;
+    public static final int BIRD_RAISE_ROTATION = 8;
+    public static final int BIRD_LOWER_ROTATION = 1;
 
     public static final int BIRD_SIZE_DIP = 30;
     public static final int BIRD_DROP_SPEED_DIP = 3;
