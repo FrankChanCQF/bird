@@ -86,16 +86,16 @@ public class MainView extends SurfaceView implements SurfaceHolder.Callback,Runn
         setFocusable(true);
         setFocusableInTouchMode(true);
         setOnTouchListener(this);
-        TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.MainSurfaceView);
-        for(int i =0 ;i<a.length();i++){
-            int attr = a.getIndex(i);
-            switch(attr){
-                case R.styleable.MainSurfaceView_inner_gravity:
-                    break;
-                default:
-                    break;
-            }
-        }
+//        TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.MainSurfaceView);
+//        for(int i =0 ;i<a.length();i++){
+//            int attr = a.getIndex(i);
+//            switch(attr){
+//                case R.styleable.MainSurfaceView_inner_gravity:
+//                    break;
+//                default:
+//                    break;
+//            }
+//        }
     }
 
     @Override

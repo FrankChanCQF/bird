@@ -23,17 +23,21 @@ public class Grade extends AbsElement {
 
     private ArrayList<Integer>numArrays = new ArrayList<>();
 
+
     public Grade(Context context, int width, int height, Bitmap[] bitmapArray){
         super(context, width, height, null);
         bmpArrays = bitmapArray;
+        onCreate(context);
     }
 
     @Override
     public void onCreate(Context context) {
-        charWidth = Util.dp2px(getContext(), Constant.NUMBER_SINGLE_WIDTH_DIP);
-        charHeight = charWidth * bmpArrays[0].getHeight()/bmpArrays[0].getWidth();
-        top = getCanvasHeight()*Constant.NUMBER_MARGIN_TOP;
-        reset();
+        if(bmpArrays!=null) {
+            charWidth = Util.dp2px(getContext(), Constant.NUMBER_SINGLE_WIDTH_DIP);
+            charHeight = charWidth * bmpArrays[0].getHeight() / bmpArrays[0].getWidth();
+            top = getCanvasHeight() * Constant.NUMBER_MARGIN_TOP;
+            reset();
+        }
     }
 
     @Override
